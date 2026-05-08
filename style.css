@@ -303,12 +303,30 @@ body {
 /* Center Message */
 #centerMessage {
     position: absolute;
-    top: 50%;
+    top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
     z-index: 5;
     pointer-events: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.big-emoji {
+    font-size: 5rem;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 20px var(--accent));
+    animation: floatEmoji 3s ease-in-out infinite;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes floatEmoji {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
 }
 
 #centerMessage h2 {
@@ -428,11 +446,11 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 380px;
-    padding: 0 20px 20px 20px;
+    height: 360px;
+    padding: 0 10px 0 10px;
     display: flex;
     justify-content: center;
-    perspective: 1000px;
+    perspective: 1500px;
     z-index: 10;
 }
 
@@ -593,3 +611,21 @@ body {
         font-size: 1rem;
     }
 }
+
+@media (max-height: 800px) {
+    #pianoContainer { height: 300px; }
+    .key.white { height: 220px; }
+    .key.black { height: 130px; }
+    #centerMessage { top: 30%; }
+    .main-header { margin: 10px; padding: 10px 20px; }
+    .logo-icon { font-size: 1.5rem; }
+    .brand h1 { font-size: 1.2rem; }
+}
+
+@media (max-height: 600px) {
+    #pianoContainer { height: 240px; }
+    .key.white { height: 180px; }
+    .key.black { height: 110px; }
+    #centerMessage { top: 25%; }
+    .main-header { display: none; } /* Hide header on very small height screens */
+}

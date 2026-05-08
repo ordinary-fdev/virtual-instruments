@@ -21,6 +21,20 @@ const INSTRUMENT_COLORS = {
     synth: '#ff66cc'
 }
 
+const INSTRUMENT_EMOJIS = {
+    piano: '🎹',
+    violin: '🎻',
+    harmonium: '🪗',
+    flute: '🪈',
+    saxophone: '🎷',
+    guitar: '🎸',
+    organ: '🎛️',
+    bassGuitar: '🎸',
+    xylophone: '🎵',
+    bells: '🔔',
+    synth: '⚡'
+}
+
 const INSTRUMENT_HOTKEYS = {
     '1': 'piano',
     '2': 'guitar',
@@ -130,6 +144,15 @@ class AudioEngine {
             
             // Update UI Labels
             const label = document.getElementById('currentInstrumentLabel')
+            const emojiEl = document.getElementById('instrumentEmoji')
+            const emoji = INSTRUMENT_EMOJIS[instrumentName] || '🎹'
+            
+            if (emojiEl) {
+                emojiEl.innerText = emoji
+                emojiEl.style.transform = 'scale(1.2) rotate(10deg)'
+                setTimeout(() => emojiEl.style.transform = '', 300)
+            }
+
             if (label) {
                 const nameElement = document.querySelector(`.instrument-card[data-instrument="${instrumentName}"] h3`)
                 label.innerText = nameElement ? nameElement.innerText : instrumentName
@@ -230,7 +253,15 @@ const audio = new AudioEngine()
 function createParticles(note) {
     const keys = document.querySelectorAll('.key')
     let targetX = window.innerWidth / 2
-    keys.forEach(key => { if (key.dataset.note === note) { const rect = key.getBoundingClientRect(); targetX = rect.left + rect.width / 2; } })
+    let targetY = window.innerHeight - 280
+    
+    keys.forEach(key => { 
+        if (key.dataset.note === note) { 
+            const rect = key.getBoundingClientRect(); 
+            targetX = rect.left + rect.width / 2;
+            targetY = rect.top;
+        } 
+    })
     
     // Use dynamic instrument color for particles
     const baseColor = INSTRUMENT_COLORS[STATE.currentInstrument] || '#ffffff'
@@ -249,7 +280,7 @@ function createParticles(note) {
             type: 'SPAWN', 
             data: { 
                 x: targetX, 
-                y: window.innerHeight - 100, 
+                y: targetY, 
                 color,
                 vx: (Math.random() - 0.5) * 10 * velocityScale,
                 vy: (Math.random() * -15 - 5) * velocityScale
