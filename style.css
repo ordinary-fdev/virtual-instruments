@@ -1,0 +1,595 @@
+:root {
+    --bg-dark: #000000;
+    --bg-accent: #1a1a1a;
+    --gold: #d4af37;
+    --cyan: #00ffff;
+    --accent: var(--gold);
+    --white-key-top: #ffffff;
+    --white-key-bottom: #e0e0e0;
+    --black-key-top: #333333;
+    --black-key-bottom: #000000;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at center, var(--bg-accent) 0%, var(--bg-dark) 100%);
+    color: white;
+    font-family: var(--font-main);
+    height: 100vh;
+    overflow: hidden;
+    cursor: crosshair;
+}
+
+#app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Background Layers */
+#webcam {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.05;
+    z-index: -3;
+    transform: scaleX(-1);
+}
+
+#visualCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+#backgroundGlow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 80vh;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    opacity: 0.2;
+    filter: blur(100px);
+    transition: opacity 0.3s, background 0.5s;
+    pointer-events: none;
+    z-index: -2;
+}
+
+/* UI Elements */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+.main-header {
+    margin: 20px;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    position: relative;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-icon {
+    font-size: 2rem;
+}
+
+.brand h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #fff, #888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brand sub {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-left: 5px;
+}
+
+.badge {
+    background: var(--gold);
+    color: black;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+/* Instruments Panel Trigger */
+.glass-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-main);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.chevron {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+/* Modal System */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    padding: 40px;
+    overflow-y: auto;
+    transform: translateY(30px) scale(0.95);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.open .modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 20px;
+}
+
+.modal-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+.instrument-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.instrument-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    padding: 30px 20px;
+    border-radius: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.instrument-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+}
+
+.instrument-card.active {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3), inset 0 0 20px var(--accent);
+}
+
+.card-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+.instrument-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.instrument-card p {
+    font-size: 0.8rem;
+    color: #888;
+    margin: 0;
+}
+
+.instrument-card.active h3 {
+    color: var(--accent);
+}
+
+.status-indicators {
+    display: flex;
+    gap: 20px;
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #444;
+    transition: all 0.3s;
+}
+
+.dot.active {
+    background: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+/* Center Message */
+#centerMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+#centerMessage h2 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+#centerMessage p {
+    font-size: 1rem;
+    color: #999;
+}
+
+.instrument-info {
+    margin-top: 0.8rem;
+    font-size: 1rem;
+    color: #ddd;
+}
+
+.instrument-label {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* Tutorial Card */
+.tutorial-card {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    padding: 20px;
+    text-align: center;
+    z-index: 10;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tutorial-card.hidden {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+    pointer-events: none;
+}
+
+.tutorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.tutorial-header h3 {
+    font-size: 0.9rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.icon-btn:hover {
+    opacity: 1;
+}
+
+.lyrics-container {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.lyrics-container p {
+    font-size: 1.2rem;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.3s;
+}
+
+.next-note-hint {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+#targetNoteDisplay {
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+}
+
+/* Piano Container */
+#pianoContainer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 380px;
+    padding: 0 20px 20px 20px;
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+    z-index: 10;
+}
+
+#pianoReflection {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.04), transparent);
+    filter: blur(20px);
+}
+
+#pianoShadow {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.9), transparent 70%);
+    filter: blur(60px);
+}
+
+#piano {
+    display: flex;
+    height: 100%;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.key {
+    position: relative;
+    border-radius: 0 0 8px 8px;
+    transition: transform 0.1s, box-shadow 0.1s;
+    user-select: none;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+}
+
+.key span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+}
+
+.key.black span {
+    color: #aaa;
+    font-size: 0.65rem;
+}
+
+.key.white {
+    width: 85px;
+    height: 280px;
+    background: linear-gradient(to bottom, var(--white-key-top) 0%, var(--white-key-bottom) 100%);
+    border: 1px solid #ccc;
+    z-index: 1;
+}
+
+.key.black {
+    width: 50px;
+    height: 170px;
+    background: linear-gradient(to bottom, var(--black-key-top) 0%, var(--black-key-bottom) 100%);
+    margin-left: -25px;
+    margin-right: -25px;
+    z-index: 2;
+    border: 1px solid #000;
+    box-shadow: 2px 5px 10px rgba(0,0,0,0.5);
+}
+
+.key.active {
+    transform: translateY(4px) rotateX(-5deg);
+}
+
+.key.active.white {
+    background: white;
+    box-shadow: inset 0 -10px 20px rgba(0,0,0,0.2);
+}
+
+.key.active.black {
+    background: #555;
+}
+
+/* Key Beam Effect */
+.key-beam {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background: linear-gradient(to top, var(--accent), transparent);
+    opacity: 0.6;
+    pointer-events: none;
+    border-radius: 4px 4px 0 0;
+    mix-blend-mode: screen;
+    z-index: 5;
+}
+
+.key.active .key-beam {
+    animation: beamUp 0.5s ease-out forwards;
+}
+
+.key.target::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gold);
+    opacity: 0.3;
+    animation: pulseGlow 1.5s infinite;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+@keyframes beamUp {
+    0% { height: 0; opacity: 0.8; }
+    100% { height: 400px; opacity: 0; }
+}
+
+@keyframes pulseGlow {
+    0% { opacity: 0.1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.1; }
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .key.white { width: 75px; height: 240px; }
+    .key.black { width: 44px; height: 150px; margin-left: -22px; margin-right: -22px; }
+    #pianoContainer { height: 320px; }
+}
+
+@media (max-width: 900px) {
+    .key.white { width: 60px; height: 200px; }
+    .key.black { width: 36px; height: 120px; margin-left: -18px; margin-right: -18px; }
+    #pianoContainer { height: 280px; }
+    #centerMessage h2 { font-size: 2rem; }
+    
+    .main-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 12px 20px;
+    }
+    
+    .instruments-panel {
+        justify-content: center;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .instrument-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+}

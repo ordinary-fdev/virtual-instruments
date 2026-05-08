@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Instruments by Prateek</title>
+    <meta name="description" content="A virtual instruments with neural hand-gesture tracking, high-fidelity audio, and cinematic visual effects.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Background Elements -->
+        <div id="backgroundGlow"></div>
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="visualCanvas"></canvas>
+
+        <!-- UI Overlay -->
+        <header class="glass-panel main-header">
+            <div class="brand">
+                <span class="logo-icon">🎹</span>
+                <h1>Virtual Instruments</h1>
+                <sub>by Prateek</sub>
+            </div>
+            <div class="instruments-panel">
+                <button id="openInstrumentModal" class="glass-btn select-trigger">
+                    <span id="currentInstrumentLabel">Grand Piano</span>
+                    <span class="chevron">▾</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Status Message -->
+        <div id="centerMessage">
+            <p>Press SPACE for Sustain</p>
+            <p class="instrument-info">Now playing: <span id="instrumentPlaying" class="instrument-label">Grand Piano</span></p>
+        </div>
+
+        <!-- Piano Container -->
+        <div id="pianoContainer">
+            <div id="pianoReflection"></div>
+            <div id="pianoShadow"></div>
+            <div id="piano"></div>
+        </div>
+
+        <!-- Instrument Selection Modal -->
+        <div id="instrumentModal" class="modal-overlay">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h2>Select Instrument</h2>
+                    <button id="closeModal" class="close-btn">&times;</button>
+                </div>
+                <div class="instrument-grid">
+                    <div class="instrument-card active" data-instrument="piano">
+                        <span class="card-icon">🎹</span>
+                        <h3>Grand Piano</h3>
+                        <p>Salamander Pro</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="flute">
+                        <span class="card-icon">🪈</span>
+                        <h3>Flute</h3>
+                        <p>Smooth wind tone</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="guitar">
+                        <span class="card-icon">🎸</span>
+                        <h3>Guitar</h3>
+                        <p>Plucked acoustic tone</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="bassGuitar">
+                        <span class="card-icon">🎸</span>
+                        <h3>Bass Guitar</h3>
+                        <p>Deep low-end</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="harmonium">
+                        <span class="card-icon">🪕</span>
+                        <h3>Harmonium</h3>
+                        <p>Rich reed drone</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="violin">
+                        <span class="card-icon">🎻</span>
+                        <h3>Violin</h3>
+                        <p>Expressive string voice</p>
+                    </div>
+                      <div class="instrument-card" data-instrument="saxophone">
+                        <span class="card-icon">🎷</span>
+                        <h3>Saxophone</h3>
+                        <p>Warm and brassy</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="organ">
+                        <span class="card-icon">🎛️</span>
+                        <h3>Organ</h3>
+                        <p>Classic sustained pads</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="xylophone">
+                        <span class="card-icon">🎵</span>
+                        <h3>Xylophone</h3>
+                        <p>Bright mallet tone</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="bells">
+                        <span class="card-icon">🔔</span>
+                        <h3>Bells</h3>
+                        <p>Chime-like resonance</p>
+                    </div>
+                    <div class="instrument-card" data-instrument="synth">
+                        <span class="card-icon">⚡</span>
+                        <h3>Synth</h3>
+                        <p>Electronic textures</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module" src="main.js"></script>
+</body>
+</html>
