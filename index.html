@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Instruments by Prateek</title>
-    <meta name="description" content="A virtual instruments with neural hand-gesture tracking, high-fidelity audio, and cinematic visual effects.">
+    <meta name="description" content="A virtual instruments with high-fidelity audio, and cinematic visual effects by Prateek">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,14 +32,19 @@
         <header class="glass-panel main-header">
             <div class="brand">
                 <span class="logo-icon">🎹</span>
-                <h1>Virtual Instruments</h1>
-                <sub>by Prateek</sub>
+                <h1>Virtual Instruments by Prateek</h1>
             </div>
-            <div class="instruments-panel">
-                <button id="openInstrumentModal" class="glass-btn select-trigger">
-                    <span id="currentInstrumentLabel">Grand Piano</span>
-                    <span class="chevron">▾</span>
+            <div class="header-actions">
+                <button id="openHelpModal" class="glass-btn help-trigger" title="How to Play">
+                    <span class="help-icon">❓</span>
+                    <span class="help-text">Guide</span>
                 </button>
+                <div class="instruments-panel">
+                    <button id="openInstrumentModal" class="glass-btn select-trigger">
+                        <span id="currentInstrumentLabel">Grand Piano</span>
+                        <span class="chevron">▾</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -120,6 +125,64 @@
                         <h3>Synth</h3>
                         <p>Electronic textures</p>
                     </div>
+                </div>
+            </div>
+        </div>
+        <!-- Help Modal -->
+        <div id="helpModal" class="modal-overlay">
+            <div class="modal-content glass-panel guide-modal">
+                <div class="modal-header">
+                    <h2>How to Play</h2>
+                    <button id="closeHelpModal" class="close-btn">&times;</button>
+                </div>
+                <div class="guide-content">
+                    <section class="guide-section">
+                        <h3><span class="guide-icon">⌨️</span> Keyboard Controls</h3>
+                        <p>Play the instruments using your computer keyboard:</p>
+                        <div class="keyboard-layout">
+                            <div class="key-row">
+                                <div class="key-cap">2<span class="note-hint">Db4</span></div>
+                                <div class="key-cap">3<span class="note-hint">Eb4</span></div>
+                                <div class="spacer"></div>
+                                <div class="key-cap">5<span class="note-hint">Gb4</span></div>
+                                <div class="key-cap">6<span class="note-hint">Ab4</span></div>
+                                <div class="key-cap">7<span class="note-hint">Bb4</span></div>
+                                <div class="spacer"></div>
+                                <div class="key-cap">9<span class="note-hint">Db5</span></div>
+                                <div class="key-cap">0<span class="note-hint">Eb5</span></div>
+                                <div class="spacer"></div>
+                                <div class="key-cap">-<span class="note-hint">Gb5</span></div>
+                                <div class="key-cap">=<span class="note-hint">Ab5</span></div>
+                                <div class="key-cap">BS<span class="note-hint">Bb5</span></div>
+                            </div>
+                            <div class="key-row">
+                                <div class="key-cap">Q<span class="note-hint">C4</span></div>
+                                <div class="key-cap">W<span class="note-hint">D4</span></div>
+                                <div class="key-cap">E<span class="note-hint">E4</span></div>
+                                <div class="key-cap">R<span class="note-hint">F4</span></div>
+                                <div class="key-cap">T<span class="note-hint">G4</span></div>
+                                <div class="key-cap">Y<span class="note-hint">A4</span></div>
+                                <div class="key-cap">U<span class="note-hint">B4</span></div>
+                                <div class="key-cap">I<span class="note-hint">C5</span></div>
+                                <div class="key-cap">O<span class="note-hint">D5</span></div>
+                                <div class="key-cap">P<span class="note-hint">E5</span></div>
+                                <div class="key-cap">[<span class="note-hint">F5</span></div>
+                                <div class="key-cap">]<span class="note-hint">G5</span></div>
+                                <div class="key-cap">\<span class="note-hint">A5</span></div>
+                                <div class="key-cap">ENT<span class="note-hint">B5</span></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="guide-section">
+                        <h3><span class="guide-icon">✨</span> Special Keys</h3>
+                        <div class="special-keys">
+                            <div class="special-item">
+                                <kbd>Z</kbd> to <kbd>M</kbd>
+                                <span>Switch Instruments</span>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>

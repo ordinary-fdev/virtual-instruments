@@ -36,13 +36,13 @@ const INSTRUMENT_EMOJIS = {
 }
 
 const INSTRUMENT_HOTKEYS = {
-    '1': 'piano',
-    '2': 'guitar',
-    '3': 'flute',
-    '4': 'violin',
-    '5': 'bassGuitar',
-    '6': 'harmonium',
-    '7': 'saxophone',
+    'z': 'piano',
+    'x': 'guitar',
+    'c': 'flute',
+    'v': 'violin',
+    'b': 'bassGuitar',
+    'n': 'harmonium',
+    'm': 'saxophone',
 }
 
 const physicsWorker = new Worker('particleWorker.js');
@@ -241,9 +241,10 @@ const NOTES = [
 ]
 
 const KEYBOARD_MAP = {
-    a: 'C4', w: 'Db4', s: 'D4', e: 'Eb4', d: 'E4', f: 'F4',
-    t: 'Gb4', g: 'G4', y: 'Ab4', h: 'A4', u: 'Bb4', j: 'B4',
-    k: 'C5', o: 'Db5', l: 'D5', p: 'Eb5', ';': 'E5', "'": 'F5'
+    // Octave 4
+    q: 'C4', '2': 'Db4', w: 'D4', '3': 'Eb4', e: 'E4', r: 'F4', '5': 'Gb4', t: 'G4', '6': 'Ab4', y: 'A4', '7': 'Bb4', u: 'B4',
+    // Octave 5
+    i: 'C5', '9': 'Db5', o: 'D5', '0': 'Eb5', p: 'E5', '[': 'F5', '-': 'Gb5', ']': 'G5', '=': 'Ab5', '\\': 'A5', 'Backspace': 'Bb5', 'Enter': 'B5'
 }
 
 const visualCanvas = document.getElementById('visualCanvas')
@@ -350,9 +351,25 @@ function buildKeyboard() {
         const key = document.createElement('div')
         key.className = `key ${noteData.type}`
         key.dataset.note = noteData.note
-        const label = document.createElement('span')
-        label.textContent = noteData.note
-        key.appendChild(label)
+        
+        // Note Name Label
+        const noteLabel = document.createElement('span')
+        noteLabel.className = 'note-name'
+        noteLabel.textContent = noteData.note
+        key.appendChild(noteLabel)
+
+        // Keyboard Key Mapping Label
+        const mapping = Object.entries(KEYBOARD_MAP).find(([k, v]) => v === noteData.note)
+        if (mapping) {
+            const keyLabel = document.createElement('span')
+            keyLabel.className = 'key-mapping'
+            let labelText = mapping[0].toUpperCase()
+            if (labelText === 'BACKSPACE') labelText = 'BS'
+            if (labelText === 'ENTER') labelText = 'ENT'
+            keyLabel.textContent = labelText
+            key.appendChild(keyLabel)
+        }
+
         key.addEventListener('pointerdown', (e) => {
             e.preventDefault(); key.releasePointerCapture(e.pointerId);
             if (!audioReady) startAudio(); audio.play(noteData.note, 0.8); activateKey(noteData.note);
@@ -379,23 +396,29 @@ window.addEventListener('keydown', async e => {
     if (!audioReady) await startAudio()
     if (e.repeat) return
 
-    const hotkey = INSTRUMENT_HOTKEYS[e.key]
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
+    
+    const hotkey = INSTRUMENT_HOTKEYS[key]
     if (hotkey) {
+        e.preventDefault()
         STATE.currentInstrument = hotkey
         audio.switchInstrument(hotkey)
         document.querySelectorAll('.instrument-card').forEach(c => c.classList.toggle('active', c.dataset.instrument === hotkey))
         return
     }
 
-    const note = KEYBOARD_MAP[e.key]
+    const note = KEYBOARD_MAP[key]
     if (!note) return
+    e.preventDefault()
     audio.play(note, 0.8)
     activateKey(note)
 })
 
 window.addEventListener('keyup', e => {
-    const note = KEYBOARD_MAP[e.key]
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
+    const note = KEYBOARD_MAP[key]
     if (!note) return
+    e.preventDefault()
     audio.release(note)
     deactivateKey(note)
 })
@@ -414,12 +437,22 @@ function initialize() {
     const openBtn = document.getElementById('openInstrumentModal')
     const closeBtn = document.getElementById('closeModal')
 
+    const helpModal = document.getElementById('helpModal')
+    const openHelpBtn = document.getElementById('openHelpModal')
+    const closeHelpBtn = document.getElementById('closeHelpModal')
+
     openBtn.addEventListener('click', () => modal.classList.add('open'))
     closeBtn.addEventListener('click', () => modal.classList.remove('open'))
+    
+    openHelpBtn.addEventListener('click', () => helpModal.classList.add('open'))
+    closeHelpBtn.addEventListener('click', () => helpModal.classList.remove('open'))
     
     // Close on click outside
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.classList.remove('open')
+    })
+    helpModal.addEventListener('click', (e) => {
+        if (e.target === helpModal) helpModal.classList.remove('open')
     })
 
     // Instrument Selection
